@@ -11,14 +11,14 @@ import enLang from 'element-ui/lib/locale/lang/en'// 如果使用中文语言包
 import '@/styles/index.scss' // global css
 
 import App from './App'
-import store from './store'
+// import store from './store'
 import router from './router'
 
 import './icons' // icon
-import './permission' // permission control
-import './utils/error-log' // error log
+// import './permission' // permission control
+// import './utils/error-log' // error log
 
-import * as filters from './filters' // global filters
+// import * as filters from './filters' // global filters
 
 /**
  * If you don't want to use mock-server
@@ -28,10 +28,10 @@ import * as filters from './filters' // global filters
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
@@ -39,15 +39,14 @@ Vue.use(Element, {
 })
 
 // register global utility filters
-Object.keys(filters).forEach(key => {
-  Vue.filter(key, filters[key])
-})
+// Object.keys(filters).forEach(key => {
+//   Vue.filter(key, filters[key])
+// })
 
 Vue.config.productionTip = false
 
 new Vue({
   el: '#app',
   router,
-  store,
   render: h => h(App)
 })

@@ -1,5 +1,11 @@
+/*
+ * @Author: Wangtao
+ * @Date: 2021-02-24 10:01:14
+ * @LastEditors: Wangtao
+ * @LastEditTime: 2021-02-24 10:13:29
+ */
 module.exports = {
-  title: 'Vue Element Admin',
+  title: 'V7 电话条 demo',
 
   /**
    * @type {boolean} true | false
