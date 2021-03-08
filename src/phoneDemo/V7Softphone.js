@@ -127,47 +127,37 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "extendUint8Array", function() { return extendUint8Array; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "extendBuiltins", function() { return extendBuiltins; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Base64", function() { return gBase64; });
-var __spreadArrays = (undefined && undefined.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
-var version = '3.6.0';
-var VERSION = version;
-var _hasatob = typeof atob === 'function';
-var _hasbtoa = typeof btoa === 'function';
-var _hasBuffer = typeof Buffer === 'function';
-var _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
-var _TE = typeof TextEncoder === 'function' ? new TextEncoder() : undefined;
-var b64ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-var b64chs = __spreadArrays(b64ch);
-var b64tab = (function (a) {
-    var tab = {};
-    a.forEach(function (c, i) { return tab[c] = i; });
+const version = '3.6.0';
+const VERSION = version;
+const _hasatob = typeof atob === 'function';
+const _hasbtoa = typeof btoa === 'function';
+const _hasBuffer = typeof Buffer === 'function';
+const _TD = typeof TextDecoder === 'function' ? new TextDecoder() : undefined;
+const _TE = typeof TextEncoder === 'function' ? new TextEncoder() : undefined;
+const b64ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+const b64chs = [...b64ch];
+const b64tab = ((a) => {
+    let tab = {};
+    a.forEach((c, i) => tab[c] = i);
     return tab;
 })(b64chs);
-var b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
-var _fromCC = String.fromCharCode.bind(String);
-var _U8Afrom = typeof Uint8Array.from === 'function'
+const b64re = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
+const _fromCC = String.fromCharCode.bind(String);
+const _U8Afrom = typeof Uint8Array.from === 'function'
     ? Uint8Array.from.bind(Uint8Array)
-    : function (it, fn) {
-        if (fn === void 0) { fn = function (x) { return x; }; }
-        return new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
-    };
-var _mkUriSafe = function (src) { return src
-    .replace(/[+\/]/g, function (m0) { return m0 == '+' ? '-' : '_'; })
-    .replace(/=+$/m, ''); };
-var _tidyB64 = function (s) { return s.replace(/[^A-Za-z0-9\+\/]/g, ''); };
+    : (it, fn = (x) => x) => new Uint8Array(Array.prototype.slice.call(it, 0).map(fn));
+const _mkUriSafe = (src) => src
+    .replace(/[+\/]/g, (m0) => m0 == '+' ? '-' : '_')
+    .replace(/=+$/m, '');
+const _tidyB64 = (s) => s.replace(/[^A-Za-z0-9\+\/]/g, '');
 /**
  * polyfill version of `btoa`
  */
-var btoaPolyfill = function (bin) {
+const btoaPolyfill = (bin) => {
     // console.log('polyfilled');
-    var u32, c0, c1, c2, asc = '';
-    var pad = bin.length % 3;
-    for (var i = 0; i < bin.length;) {
+    let u32, c0, c1, c2, asc = '';
+    const pad = bin.length % 3;
+    for (let i = 0; i < bin.length;) {
         if ((c0 = bin.charCodeAt(i++)) > 255 ||
             (c1 = bin.charCodeAt(i++)) > 255 ||
             (c2 = bin.charCodeAt(i++)) > 255)
@@ -185,16 +175,16 @@ var btoaPolyfill = function (bin) {
  * @param {String} bin binary string
  * @returns {string} Base64-encoded string
  */
-var _btoa = _hasbtoa ? function (bin) { return btoa(bin); }
-    : _hasBuffer ? function (bin) { return Buffer.from(bin, 'binary').toString('base64'); }
+const _btoa = _hasbtoa ? (bin) => btoa(bin)
+    : _hasBuffer ? (bin) => Buffer.from(bin, 'binary').toString('base64')
         : btoaPolyfill;
-var _fromUint8Array = _hasBuffer
-    ? function (u8a) { return Buffer.from(u8a).toString('base64'); }
-    : function (u8a) {
+const _fromUint8Array = _hasBuffer
+    ? (u8a) => Buffer.from(u8a).toString('base64')
+    : (u8a) => {
         // cf. https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string/12713326#12713326
-        var maxargs = 0x1000;
-        var strs = [];
-        for (var i = 0, l = u8a.length; i < l; i += maxargs) {
+        const maxargs = 0x1000;
+        let strs = [];
+        for (let i = 0, l = u8a.length; i < l; i += maxargs) {
             strs.push(_fromCC.apply(null, u8a.subarray(i, i + maxargs)));
         }
         return _btoa(strs.join(''));
@@ -204,14 +194,11 @@ var _fromUint8Array = _hasBuffer
  * @param {boolean} [urlsafe] URL-and-filename-safe a la RFC4648 §5
  * @returns {string} Base64 string
  */
-var fromUint8Array = function (u8a, urlsafe) {
-    if (urlsafe === void 0) { urlsafe = false; }
-    return urlsafe ? _mkUriSafe(_fromUint8Array(u8a)) : _fromUint8Array(u8a);
-};
+const fromUint8Array = (u8a, urlsafe = false) => urlsafe ? _mkUriSafe(_fromUint8Array(u8a)) : _fromUint8Array(u8a);
 // This trick is found broken https://github.com/dankogai/js-base64/issues/130
 // const utob = (src: string) => unescape(encodeURIComponent(src));
 // reverting good old fationed regexp
-var cb_utob = function (c) {
+const cb_utob = (c) => {
     if (c.length < 2) {
         var cc = c.charCodeAt(0);
         return cc < 0x80 ? c
@@ -231,40 +218,37 @@ var cb_utob = function (c) {
             + _fromCC(0x80 | (cc & 0x3f)));
     }
 };
-var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
+const re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
 /**
  * @deprecated should have been internal use only.
  * @param {string} src UTF-8 string
  * @returns {string} UTF-16 string
  */
-var utob = function (u) { return u.replace(re_utob, cb_utob); };
+const utob = (u) => u.replace(re_utob, cb_utob);
 //
-var _encode = _hasBuffer
-    ? function (s) { return Buffer.from(s, 'utf8').toString('base64'); }
+const _encode = _hasBuffer
+    ? (s) => Buffer.from(s, 'utf8').toString('base64')
     : _TE
-        ? function (s) { return _fromUint8Array(_TE.encode(s)); }
-        : function (s) { return _btoa(utob(s)); };
+        ? (s) => _fromUint8Array(_TE.encode(s))
+        : (s) => _btoa(utob(s));
 /**
  * converts a UTF-8-encoded string to a Base64 string.
  * @param {boolean} [urlsafe] if `true` make the result URL-safe
  * @returns {string} Base64 string
  */
-var encode = function (src, urlsafe) {
-    if (urlsafe === void 0) { urlsafe = false; }
-    return urlsafe
-        ? _mkUriSafe(_encode(src))
-        : _encode(src);
-};
+const encode = (src, urlsafe = false) => urlsafe
+    ? _mkUriSafe(_encode(src))
+    : _encode(src);
 /**
  * converts a UTF-8-encoded string to URL-safe Base64 RFC4648 §5.
  * @returns {string} Base64 string
  */
-var encodeURI = function (src) { return encode(src, true); };
+const encodeURI = (src) => encode(src, true);
 // This trick is found broken https://github.com/dankogai/js-base64/issues/130
 // const btou = (src: string) => decodeURIComponent(escape(src));
 // reverting good old fationed regexp
-var re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
-var cb_btou = function (cccc) {
+const re_btou = /[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}/g;
+const cb_btou = (cccc) => {
     switch (cccc.length) {
         case 4:
             var cp = ((0x07 & cccc.charCodeAt(0)) << 18)
@@ -287,18 +271,18 @@ var cb_btou = function (cccc) {
  * @param {string} src UTF-16 string
  * @returns {string} UTF-8 string
  */
-var btou = function (b) { return b.replace(re_btou, cb_btou); };
+const btou = (b) => b.replace(re_btou, cb_btou);
 /**
  * polyfill version of `atob`
  */
-var atobPolyfill = function (asc) {
+const atobPolyfill = (asc) => {
     // console.log('polyfilled');
     asc = asc.replace(/\s+/g, '');
     if (!b64re.test(asc))
         throw new TypeError('malformed base64.');
     asc += '=='.slice(2 - (asc.length & 3));
-    var u24, bin = '', r1, r2;
-    for (var i = 0; i < asc.length;) {
+    let u24, bin = '', r1, r2;
+    for (let i = 0; i < asc.length;) {
         u24 = b64tab[asc.charAt(i++)] << 18
             | b64tab[asc.charAt(i++)] << 12
             | (r1 = b64tab[asc.charAt(i++)]) << 6
@@ -314,44 +298,42 @@ var atobPolyfill = function (asc) {
  * @param {String} asc Base64-encoded string
  * @returns {string} binary string
  */
-var _atob = _hasatob ? function (asc) { return atob(_tidyB64(asc)); }
-    : _hasBuffer ? function (asc) { return Buffer.from(asc, 'base64').toString('binary'); }
+const _atob = _hasatob ? (asc) => atob(_tidyB64(asc))
+    : _hasBuffer ? (asc) => Buffer.from(asc, 'base64').toString('binary')
         : atobPolyfill;
 //
-var _toUint8Array = _hasBuffer
-    ? function (a) { return _U8Afrom(Buffer.from(a, 'base64')); }
-    : function (a) { return _U8Afrom(_atob(a), function (c) { return c.charCodeAt(0); }); };
+const _toUint8Array = _hasBuffer
+    ? (a) => _U8Afrom(Buffer.from(a, 'base64'))
+    : (a) => _U8Afrom(_atob(a), c => c.charCodeAt(0));
 /**
  * converts a Base64 string to a Uint8Array.
  */
-var toUint8Array = function (a) { return _toUint8Array(_unURI(a)); };
+const toUint8Array = (a) => _toUint8Array(_unURI(a));
 //
-var _decode = _hasBuffer
-    ? function (a) { return Buffer.from(a, 'base64').toString('utf8'); }
+const _decode = _hasBuffer
+    ? (a) => Buffer.from(a, 'base64').toString('utf8')
     : _TD
-        ? function (a) { return _TD.decode(_toUint8Array(a)); }
-        : function (a) { return btou(_atob(a)); };
-var _unURI = function (a) {
-    return _tidyB64(a.replace(/[-_]/g, function (m0) { return m0 == '-' ? '+' : '/'; }));
-};
+        ? (a) => _TD.decode(_toUint8Array(a))
+        : (a) => btou(_atob(a));
+const _unURI = (a) => _tidyB64(a.replace(/[-_]/g, (m0) => m0 == '-' ? '+' : '/'));
 /**
  * converts a Base64 string to a UTF-8 string.
  * @param {String} src Base64 string.  Both normal and URL-safe are supported
  * @returns {string} UTF-8 string
  */
-var decode = function (src) { return _decode(_unURI(src)); };
+const decode = (src) => _decode(_unURI(src));
 /**
  * check if a value is a valid Base64 string
  * @param {String} src a value to check
   */
-var isValid = function (src) {
+const isValid = (src) => {
     if (typeof src !== 'string')
         return false;
-    var s = src.replace(/\s+/g, '').replace(/=+$/, '');
+    const s = src.replace(/\s+/g, '').replace(/=+$/, '');
     return !/[^\s0-9a-zA-Z\+/]/.test(s) || !/[^\s0-9a-zA-Z\-_]/.test(s);
 };
 //
-var _noEnum = function (v) {
+const _noEnum = (v) => {
     return {
         value: v, enumerable: false, writable: true, configurable: true
     };
@@ -359,8 +341,8 @@ var _noEnum = function (v) {
 /**
  * extend String.prototype with relevant methods
  */
-var extendString = function () {
-    var _add = function (name, body) { return Object.defineProperty(String.prototype, name, _noEnum(body)); };
+const extendString = function () {
+    const _add = (name, body) => Object.defineProperty(String.prototype, name, _noEnum(body));
     _add('fromBase64', function () { return decode(this); });
     _add('toBase64', function (urlsafe) { return encode(this, urlsafe); });
     _add('toBase64URI', function () { return encode(this, true); });
@@ -370,8 +352,8 @@ var extendString = function () {
 /**
  * extend Uint8Array.prototype with relevant methods
  */
-var extendUint8Array = function () {
-    var _add = function (name, body) { return Object.defineProperty(Uint8Array.prototype, name, _noEnum(body)); };
+const extendUint8Array = function () {
+    const _add = (name, body) => Object.defineProperty(Uint8Array.prototype, name, _noEnum(body));
     _add('toBase64', function (urlsafe) { return fromUint8Array(this, urlsafe); });
     _add('toBase64URI', function () { return fromUint8Array(this, true); });
     _add('toBase64URL', function () { return fromUint8Array(this, true); });
@@ -379,11 +361,11 @@ var extendUint8Array = function () {
 /**
  * extend Builtin prototypes with relevant methods
  */
-var extendBuiltins = function () {
+const extendBuiltins = () => {
     extendString();
     extendUint8Array();
 };
-var gBase64 = {
+const gBase64 = {
     version: version,
     VERSION: VERSION,
     atob: _atob,
@@ -442,6 +424,7 @@ var gBase64 = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return V7Softphone; });
 /* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js");
 /* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(socket_io_client__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _base64__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base64 */ "./demo/base64.ts");
@@ -450,19 +433,17 @@ __webpack_require__.r(__webpack_exports__);
  * @Author: Wangtao
  * @Date: 2021-02-02 11:03:59
  * @LastEditors: Wangtao
- * @LastEditTime: 2021-02-28 21:07:44
+ * @LastEditTime: 2021-03-08 15:18:39
  */
 
 
 
-var V7Softphone = /** @class */ (function () {
-    function V7Softphone(options) {
-        var _this = this;
-        if (options === void 0) { options = {}; }
-        this.initAttachEvent = function (options, userOptions) {
-            if (_this.attachEventCallbacks) {
-                _this.attachEventCallbacks.serve = options.sdkUrl + '/' + options.namespace;
-                _this.attachEventCallbacks.SocketOptions = {
+class V7Softphone {
+    constructor(options = {}) {
+        this.initAttachEvent = (options, userOptions) => {
+            if (this.attachEventCallbacks) {
+                this.attachEventCallbacks.serve = options.sdkUrl + '/' + options.namespace;
+                this.attachEventCallbacks.SocketOptions = {
                     query: {
                         accountId: userOptions.accountId,
                         agentNumber: userOptions.agentNumber,
@@ -472,237 +453,446 @@ var V7Softphone = /** @class */ (function () {
                         loginToken: userOptions.loginToken
                     }
                 };
-                V7Softphone.createEventHandle(_this.attachEventCallbacks);
+                V7Softphone.createEventHandle(this.attachEventCallbacks);
             }
         };
-        this.initWebrtcEvent = function (extras) {
-            V7Softphone.webPhone = new _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"]({ server: extras.sipRegisterAddress, sip: V7Softphone.agentInfo.webrtcSipNumber, secret: V7Softphone.agentInfo.webrtcSipKey });
-            V7Softphone.webPhone.message = function (res) {
-                console.log('oooooooooooooooooooooooooooooooo', res);
+        this.attachEvent = ((callbacks) => {
+            this.attachEventCallbacks = callbacks;
+        });
+        this._callApi = () => {
+            return {
+                dialout(params) {
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    if (params.calleeNumber === null || params.calleeNumber === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'Parameter calleeNumber is required!'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    const query = {
+                        calleeNumber: params.calleeNumber,
+                        agentNumber: V7Softphone.agentInfo.agentNumber
+                    };
+                    if (params.agentTimeout) {
+                        query.agentTimeout = params.agentTimeout;
+                    }
+                    if (params.calleeTimeout) {
+                        query.calleeTimeout = params.calleeTimeout;
+                    }
+                    if (params.agentCallerNumber) {
+                        query.agentCallerNumber = params.agentCallerNumber;
+                    }
+                    if (params.calleeCallerNumber) {
+                        query.calleeCallerNumber = params.calleeCallerNumber;
+                    }
+                    V7Softphone.request(server + '/call/sdk/v1/call/dialOut', {
+                        verb: 'POST', body: query,
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                params.success({
+                                    success: true,
+                                    message: 'dialout success'
+                                });
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                },
+                hangup(params) {
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    V7Softphone.request(server + '/call/sdk/v1/call/hangup', {
+                        verb: 'POST', body: {},
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                params.success({
+                                    success: true,
+                                    message: 'hangup success'
+                                });
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                },
+                holdOrUnHold(params) {
+                    //保持  取消保持
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    if (params.type === null || params.type === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'Parameter type is required!'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    const query = {
+                        type: params.type
+                    };
+                    V7Softphone.request(server + '/call/sdk/v1/call/holdOrUnHold', {
+                        verb: 'POST', body: query,
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                params.success({
+                                    success: true,
+                                    message: 'holdOrUnHold success'
+                                });
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                },
+                muteOrUnMute(params) {
+                    //静音 取消静音
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    if (params.type === null || params.type === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'Parameter type is required!'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    const query = {
+                        type: params.type
+                    };
+                    V7Softphone.request(server + '/call/sdk/v1/call/muteOrUnMute', {
+                        verb: 'POST', body: query,
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                params.success({
+                                    success: true,
+                                    message: 'muteOrUnMute success'
+                                });
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                },
+                transfer() {
+                    // 转接
+                },
+                transferIvr() {
+                    // 转满意度
+                }
             };
         };
-        this.attachEvent = (function (callbacks) {
-            _this.attachEventCallbacks = callbacks;
-        });
-        this.callApi = {
-            dialout: function (params) {
-                params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
-                params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
-                if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                if (params.calleeNumber === null || params.calleeNumber === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'Parameter calleeNumber is required!'
-                    });
-                    return;
-                }
-                var server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
-                var query = {
-                    calleeNumber: params.calleeNumber,
-                    agentNumber: V7Softphone.agentInfo.agentNumber
-                };
-                if (params.agentTimeout) {
-                    query.agentTimeout = params.agentTimeout;
-                }
-                if (params.calleeTimeout) {
-                    query.calleeTimeout = params.calleeTimeout;
-                }
-                if (params.agentCallerNumber) {
-                    query.agentCallerNumber = params.agentCallerNumber;
-                }
-                if (params.calleeCallerNumber) {
-                    query.calleeCallerNumber = params.calleeCallerNumber;
-                }
-                V7Softphone.request(server + '/call/sdk/v1/call/dialOut', {
-                    verb: 'POST', body: query,
-                    loginToken: V7Softphone.callApiRequestToken,
-                    sessionId: V7Softphone.agentInfo._id,
-                    success: function (res) {
-                        if (res.success) {
-                            params.success({
-                                success: true,
-                                message: 'dialout success'
-                            });
-                        }
-                        else {
-                            params.fail({
-                                success: false,
-                                message: res.message,
-                                code: res.code
-                            });
-                        }
+        this._agentApi = () => {
+            const that = this;
+            return {
+                updateLoginType(params) {
+                    let loginNumber = null;
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (params.loginType === null || params.loginType === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'Parameter loginType is required!'
+                        });
+                        return;
                     }
-                });
-            },
-            hangup: function (params) {
-                params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
-                params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
-                if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                var server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
-                V7Softphone.request(server + '/call/sdk/v1/call/hangup', {
-                    verb: 'POST', body: {},
-                    loginToken: V7Softphone.callApiRequestToken,
-                    sessionId: V7Softphone.agentInfo._id,
-                    success: function (res) {
-                        if (res.success) {
-                            params.success({
-                                success: true,
-                                message: 'hangup success'
-                            });
-                        }
-                        else {
-                            params.fail({
-                                success: false,
-                                message: res.message,
-                                code: res.code
-                            });
-                        }
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
                     }
-                });
-            },
-            holdOrUnHold: function (params) {
-                //保持  取消保持
-                params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
-                params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
-                if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                if (params.type === null || params.type === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'Parameter type is required!'
-                    });
-                    return;
-                }
-                var server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
-                var query = {
-                    type: params.type
-                };
-                V7Softphone.request(server + '/call/sdk/v1/call/holdOrUnHold', {
-                    verb: 'POST', body: query,
-                    loginToken: V7Softphone.callApiRequestToken,
-                    sessionId: V7Softphone.agentInfo._id,
-                    success: function (res) {
-                        if (res.success) {
-                            params.success({
-                                success: true,
-                                message: 'holdOrUnHold success'
-                            });
-                        }
-                        else {
-                            params.fail({
-                                success: false,
-                                message: res.message,
-                                code: res.code
-                            });
-                        }
+                    if (params.loginNumber !== null && params.loginNumber !== undefined) {
+                        loginNumber = params.loginNumber;
                     }
-                });
-            },
-            muteOrUnMute: function (params) {
-                //静音 取消静音
-                params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
-                params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
-                if (V7Softphone.callApiRequestToken === null || V7Softphone.callApiRequestToken === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'initialization not complete!'
-                    });
-                    return;
-                }
-                if (params.type === null || params.type === undefined) {
-                    params.fail({
-                        success: false,
-                        message: 'Parameter type is required!'
-                    });
-                    return;
-                }
-                var server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
-                var query = {
-                    type: params.type
-                };
-                V7Softphone.request(server + '/call/sdk/v1/call/muteOrUnMute', {
-                    verb: 'POST', body: query,
-                    loginToken: V7Softphone.callApiRequestToken,
-                    sessionId: V7Softphone.agentInfo._id,
-                    success: function (res) {
-                        if (res.success) {
-                            params.success({
-                                success: true,
-                                message: 'muteOrUnMute success'
-                            });
-                        }
-                        else {
-                            params.fail({
-                                success: false,
-                                message: res.message,
-                                code: res.code
-                            });
-                        }
+                    if (params.loginType === 'PSTN') {
+                        loginNumber = loginNumber ? loginNumber : V7Softphone.agentInfo.mobile;
                     }
-                });
-            },
-            transfer: function () {
-                // 转接
-            },
-            transferIvr: function () {
-                // 转满意度
-            }
+                    if (params.loginType === 'SIP') {
+                        loginNumber = loginNumber ? loginNumber : V7Softphone.agentInfo.sipNumber;
+                    }
+                    if (params.loginType === 'WEBRTC') {
+                        loginNumber = V7Softphone.agentInfo.webrtcSipNumber;
+                    }
+                    if (loginNumber === null || loginNumber === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'Please fill in the loginNumber field according to the document'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    const query = {
+                        loginType: params.loginType,
+                        loginNumber: loginNumber
+                    };
+                    V7Softphone.request(server + '/call/sdk/v1/call/update/loginType', {
+                        verb: 'POST', body: query,
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                params.success({
+                                    success: true,
+                                    message: 'updateLoginType success'
+                                });
+                                if (params.loginType === 'WEBRTC') {
+                                    console.log(that._webPhoneApi());
+                                    that._webPhoneApi().connect();
+                                }
+                                else {
+                                    that._webPhoneApi().disconnect();
+                                }
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                },
+                getAvailableSipNumberList(params) {
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    const query = {
+                        types: [
+                            'availableSipNumberList'
+                        ]
+                    };
+                    V7Softphone.request(server + '/call/sdk/v1/call/query/config', {
+                        verb: 'POST', body: query,
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                let dataList = [];
+                                res.availableSipNumberList.forEach(event => {
+                                    const resEvent = {
+                                        number: event.number,
+                                        numberName: event.numberName
+                                    };
+                                    dataList.push(resEvent);
+                                });
+                                params.success({
+                                    success: true,
+                                    data: dataList
+                                });
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                },
+                getAgentPhoneBarList(params) {
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    const query = {};
+                    V7Softphone.request(server + '/call/sdk/v1/call/query/phoneBar/list', {
+                        verb: 'POST', body: query,
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                let dataList = [];
+                                res.data.forEach(event => {
+                                    console.log(event, 'event=========');
+                                    const resEvent = { name: event.name, number: event.number };
+                                    dataList.push(resEvent);
+                                });
+                                console.log(dataList, '[[[[[[[[[[[[[[[[[[[[');
+                                params.success({
+                                    success: true,
+                                    data: dataList
+                                });
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                },
+                updateAgentStatus(params) {
+                    params.success = (typeof params.success == "function") ? params.success : V7Softphone.noop;
+                    params.fail = (typeof params.fail == "function") ? params.fail : V7Softphone.noop;
+                    if (params.statusNumber === null || params.statusNumber === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'Parameter statusNumber is required!'
+                        });
+                        return;
+                    }
+                    if (V7Softphone.agentInfo === null || V7Softphone.agentInfo === undefined) {
+                        params.fail({
+                            success: false,
+                            message: 'initialization not complete!'
+                        });
+                        return;
+                    }
+                    const server = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+                    const query = {
+                        statusNumber: params.statusNumber
+                    };
+                    V7Softphone.request(server + '/call/sdk/v1/call/update/agentStatus', {
+                        verb: 'POST', body: query,
+                        loginToken: V7Softphone.callApiRequestToken,
+                        sessionId: V7Softphone.agentInfo._id,
+                        success: (res) => {
+                            if (res.success) {
+                                params.success({
+                                    success: true
+                                });
+                            }
+                            else {
+                                params.fail({
+                                    success: false,
+                                    message: res.message,
+                                    code: res.code
+                                });
+                            }
+                        }
+                    });
+                }
+            };
         };
-        this.webPhoneApi = {
-            accept: function () {
-                _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].accept();
-            },
-            destory: function () {
-                _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].unregister();
-            },
-            sendDTMF: function (tone) {
-                _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].sendDTMF(tone);
-            }
+        this._webPhoneApi = () => {
+            return {
+                accept() {
+                    _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].accept();
+                },
+                connect() {
+                    if (!V7Softphone.webPhone || !this.isConnected()) {
+                        V7Softphone.initWebrtcEvent(V7Softphone.agentextras);
+                    }
+                },
+                disconnect() {
+                    if (V7Softphone.webPhone && this.isConnected()) {
+                        _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].disconnect();
+                    }
+                },
+                isConnected() {
+                    return _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].isConnected();
+                },
+                sendDTMF(tone) {
+                    _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].sendDTMF(tone);
+                }
+            };
         };
         options.error = (typeof options.error == "function") ? options.error : V7Softphone.noop;
         options.success = (typeof options.success == "function") ? options.success : V7Softphone.noop;
@@ -726,8 +916,7 @@ var V7Softphone = /** @class */ (function () {
         }
         this.init(options);
     }
-    V7Softphone.prototype.init = function (options) {
-        if (options === void 0) { options = {}; }
+    init(options = {}) {
         V7Softphone.trace = V7Softphone.noop;
         V7Softphone.debug = V7Softphone.noop;
         V7Softphone.log = V7Softphone.noop;
@@ -767,15 +956,14 @@ var V7Softphone = /** @class */ (function () {
             }
         }
         V7Softphone.log('Initializing library');
-        var usedDependencies = options.dependencies || V7Softphone.useDefaultDependencies({
+        const usedDependencies = options.dependencies || V7Softphone.useDefaultDependencies({
             WebSocket: v7Websocket
         });
         V7Softphone.newWebSocket = usedDependencies.newWebSocket;
         V7Softphone.request = usedDependencies.request;
         this.login(options);
-    };
-    V7Softphone.createEventHandle = function (callbacks) {
-        if (callbacks === void 0) { callbacks = {}; }
+    }
+    static createEventHandle(callbacks = {}) {
         callbacks.success = (typeof callbacks.success == "function") ? callbacks.success : V7Softphone.noop;
         callbacks.error = (typeof callbacks.error == "function") ? callbacks.error : V7Softphone.noop;
         callbacks.message = (typeof callbacks.message == "function") ? callbacks.message : V7Softphone.noop;
@@ -784,10 +972,10 @@ var V7Softphone = /** @class */ (function () {
             callbacks.SocketOptions = {};
             V7Softphone.error({ message: 'login response error!' });
         }
-        var ws = V7Softphone.newWebSocket(callbacks.server, callbacks.SocketOptions);
-        ws.on('connect', function () {
+        const ws = V7Softphone.newWebSocket(callbacks.server, callbacks.SocketOptions);
+        ws.on('connect', () => {
             callbacks.success('connect event serve success!');
-            var callApiUrl = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
+            const callApiUrl = V7Softphone.initOptions.server || V7Softphone.callApiUrl;
             V7Softphone.request(callApiUrl + '/auth/action/sdk/online', {
                 verb: 'POST', body: {
                     userId: V7Softphone.agentInfo._id,
@@ -796,7 +984,7 @@ var V7Softphone = /** @class */ (function () {
                 },
                 loginToken: V7Softphone.agentInfo.loginToken,
                 sessionId: V7Softphone.agentInfo._id,
-                success: function (res) {
+                success: (res) => {
                     if (res.success) {
                         V7Softphone.callApiRequestToken = V7Softphone.agentInfo.loginToken;
                         V7Softphone.log('Initializing success!');
@@ -805,44 +993,46 @@ var V7Softphone = /** @class */ (function () {
                 }
             });
         });
-        ws.on('error', function (error) {
+        ws.on('error', (error) => {
             callbacks.error({
                 type: 'socketError',
                 error: error
             });
         });
-        ws.on('message', function (event) {
+        ws.on('message', (event) => {
             if (event.type === 'kickOff') {
                 ws.disconnect();
+                _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"].disconnect();
             }
             callbacks.message({
                 type: event.type,
                 event: event.body
             });
         });
-    };
-    V7Softphone.prototype.login = function (options) {
-        var _this = this;
-        var server = options.server || 'https://test1-v7.7moor.com/sdkapis';
-        var loginName = options.agentNumber + '@' + options.accountId;
-        var password = Object(_base64__WEBPACK_IMPORTED_MODULE_1__["encode"])(options.password);
-        var loginType = options.extenType;
+    }
+    login(options) {
+        const server = options.server || 'https://test1-v7.7moor.com/sdkapis';
+        const loginName = options.agentNumber + '@' + options.accountId;
+        const password = Object(_base64__WEBPACK_IMPORTED_MODULE_1__["encode"])(options.password);
+        const loginType = options.extenType;
         V7Softphone.request(server + '/auth/action/sdk/login', {
             verb: 'POST', body: {
                 "loginName": loginName,
                 "password": password,
-                "loginType": loginType
+                "loginType": loginType,
+                "loginChannel": 'phoneBarSdk'
             },
-            success: function (res) {
+            success: (res) => {
                 if (res.success) {
                     if (res.data.extras) {
                         if (res.data.user) {
                             V7Softphone.agentInfo = res.data.user;
                             V7Softphone.initOptions = options;
                         }
-                        _this.initAttachEvent(res.data.extras, res.data.user);
+                        this.initAttachEvent(res.data.extras, res.data.user);
+                        V7Softphone.agentextras = res.data.extras;
                         if (loginType === 'WEBRTC') {
-                            _this.initWebrtcEvent(res.data.extras);
+                            V7Softphone.initWebrtcEvent(res.data.extras);
                         }
                     }
                 }
@@ -850,31 +1040,31 @@ var V7Softphone = /** @class */ (function () {
                     options.error(res);
                 }
             },
-            error: function (error) {
+            error: (error) => {
                 options.error(error);
             }
         });
-    };
-    V7Softphone.noop = function () { };
-    V7Softphone.useDefaultDependencies = function (deps) {
-        var f = (deps && deps.fetch) || fetch;
-        var p = (deps && deps.Promise) || Promise;
-        var socketCls = (deps && deps.WebSocket) || WebSocket;
+    }
+    static noop() { }
+    static useDefaultDependencies(deps) {
+        const f = (deps && deps.fetch) || fetch;
+        const p = (deps && deps.Promise) || Promise;
+        const socketCls = (deps && deps.WebSocket) || WebSocket;
         return {
-            newWebSocket: function (server, proto) { return new socketCls(server, proto); },
-            request: function (url, options) {
-                var fetchOptions = { method: options.verb, cache: 'no-cache', headers: { 'Content-Type': 'application/json', loginToken: options.loginToken || '', sessionId: options.sessionId || '' } };
+            newWebSocket(server, proto) { return new socketCls(server, proto); },
+            request(url, options) {
+                const fetchOptions = { method: options.verb, cache: 'no-cache', headers: { 'Content-Type': 'application/json', loginToken: options.loginToken || '', sessionId: options.sessionId || '' } };
                 if (options.withCredentials !== undefined) {
                     fetchOptions.credentials = options.withCredentials === true ? 'include' : (options.withCredentials ? options.withCredentials : 'omit');
                 }
                 if (options.body !== undefined) {
                     fetchOptions.body = JSON.stringify(options.body);
                 }
-                var fetching = f(url, fetchOptions).catch(function (error) {
+                let fetching = f(url, fetchOptions).catch(function (error) {
                     return p.reject({ message: 'Probably a network error, is the gateway down?', error: error });
                 });
                 if (options.timeout !== undefined) {
-                    var timeout = new p(function (resolve, reject) {
+                    var timeout = new p((resolve, reject) => {
                         var timerId = setTimeout(function () {
                             clearTimeout(timerId);
                             options.error({ message: 'Request timed out', timeout: options.timeout });
@@ -906,16 +1096,29 @@ var V7Softphone = /** @class */ (function () {
                 return fetching;
             }
         };
+    }
+    get agentApi() {
+        return this._agentApi();
+    }
+    get webPhoneApi() {
+        return this._webPhoneApi();
+    }
+    get callApi() {
+        return this._callApi();
+    }
+}
+V7Softphone.callApiUrl = 'https://test1-v7.7moor.com/sdkapis';
+V7Softphone.initWebrtcEvent = (extras) => {
+    V7Softphone.webPhone = new _webPhoneSdk__WEBPACK_IMPORTED_MODULE_2__["default"]({ server: extras.sipRegisterAddress, sip: V7Softphone.agentInfo.webrtcSipNumber, secret: V7Softphone.agentInfo.webrtcSipKey });
+    V7Softphone.webPhone.message = (res) => {
+        console.log('oooooooooooooooooooooooooooooooo', res);
     };
-    V7Softphone.callApiUrl = 'https://test1-v7.7moor.com/sdkapis';
-    return V7Softphone;
-}());
-/* harmony default export */ __webpack_exports__["default"] = (V7Softphone);
-var v7Websocket = /** @class */ (function () {
-    function v7Websocket(server, proto) {
+};
+class v7Websocket {
+    constructor(server, proto) {
         this.ws = socket_io_client__WEBPACK_IMPORTED_MODULE_0___default.a.connect(server, proto);
     }
-    v7Websocket.prototype.on = function (type, callback) {
+    on(type, callback) {
         if (type === 'connect') {
             this.ws.on(type, callback);
         }
@@ -929,15 +1132,14 @@ var v7Websocket = /** @class */ (function () {
             this.ws.on('callEvent', callback);
             this.ws.on('commonEvent', callback);
         }
-    };
-    v7Websocket.prototype.emit = function (type, params, callback) {
+    }
+    emit(type, params, callback) {
         this.ws.emit(type, params, callback);
-    };
-    v7Websocket.prototype.disconnect = function () {
+    }
+    disconnect() {
         this.ws.disconnect();
-    };
-    return v7Websocket;
-}());
+    }
+}
 
 
 /***/ }),
@@ -951,45 +1153,53 @@ var v7Websocket = /** @class */ (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return WebPhoneSdk; });
 /* harmony import */ var _webrtc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./webrtc */ "./demo/webrtc.ts");
 /*
  * @Author: Wangtao
  * @Date: 2021-01-11 16:58:27
  * @LastEditors: Wangtao
- * @LastEditTime: 2021-02-28 21:06:56
+ * @LastEditTime: 2021-03-04 14:58:04
  */
 
-var WebPhoneSdk = /** @class */ (function () {
-    function WebPhoneSdk(options) {
+class WebPhoneSdk {
+    constructor(options) {
         this.options = options;
         WebPhoneSdk.WebrtcObj = new _webrtc__WEBPACK_IMPORTED_MODULE_0__["default"](options);
-        WebPhoneSdk.WebrtcObj.message = function (message) {
+        WebPhoneSdk.WebrtcObj.message = (message) => {
             if (WebPhoneSdk.message) {
                 WebPhoneSdk.message(message);
             }
         };
     }
-    WebPhoneSdk.accept = function () {
+    static accept() {
         if (WebPhoneSdk.WebrtcObj) {
             WebPhoneSdk.WebrtcObj.accept();
         }
-    };
-    WebPhoneSdk.sendDTMF = function (tone) {
+    }
+    static sendDTMF(tone) {
         if (WebPhoneSdk.WebrtcObj) {
             WebPhoneSdk.WebrtcObj.sendDTMF(tone);
         }
-    };
-    WebPhoneSdk.unregister = function () {
+    }
+    static unregister() {
         if (WebPhoneSdk.WebrtcObj) {
             WebPhoneSdk.WebrtcObj.m7UnregisterWebrtc();
         }
-    };
-    WebPhoneSdk.CallConfig = {
-        autoAnswer: false
-    };
-    return WebPhoneSdk;
-}());
-/* harmony default export */ __webpack_exports__["default"] = (WebPhoneSdk);
+    }
+    static disconnect() {
+        return WebPhoneSdk.WebrtcObj.disconnect();
+    }
+    static connect() {
+        return WebPhoneSdk.WebrtcObj.connect();
+    }
+    static isConnected() {
+        return WebPhoneSdk.WebrtcObj.isConnected();
+    }
+}
+WebPhoneSdk.CallConfig = {
+    autoAnswer: false
+};
 
 
 /***/ }),
@@ -1003,6 +1213,7 @@ var WebPhoneSdk = /** @class */ (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return M7Webrtc; });
 /* harmony import */ var sip_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sip.js */ "./node_modules/sip.js/lib/index.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1013,81 +1224,44 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 
 // let registerer: any = {}
 // let currentConfig: any = {}
 // let Ginvitation: Invitation
-var M7Webrtc = /** @class */ (function () {
-    function M7Webrtc(options) {
-        var _this = this;
-        this.accept = function () { return __awaiter(_this, void 0, void 0, function () {
-            var constrainsDefault, options;
-            return __generator(this, function (_a) {
-                constrainsDefault = {
-                    audio: true,
-                    video: false
-                };
-                options = {
-                    sessionDescriptionHandlerOptions: {
-                        constraints: constrainsDefault
-                    }
-                };
-                return [2 /*return*/, this.Ginvitation.accept(options)];
-            });
-        }); };
-        this.m7UnregisterWebrtc = function () { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (!this.registerer) {
-                    return [2 /*return*/, false];
+class M7Webrtc {
+    constructor(options) {
+        this.accept = () => __awaiter(this, void 0, void 0, function* () {
+            const constrainsDefault = {
+                audio: true,
+                video: false
+            };
+            const options = {
+                sessionDescriptionHandlerOptions: {
+                    constraints: constrainsDefault
                 }
-                return [2 /*return*/, this.registerer.unregister({ all: true }).then(function (res) {
-                        console.log(res, '注销webrtc成功=======');
-                    }).catch(function (e) {
-                        console.log(e, '注销webrtc失败=======');
-                    })];
+            };
+            return this.Ginvitation.accept(options);
+        });
+        this.m7UnregisterWebrtc = () => __awaiter(this, void 0, void 0, function* () {
+            if (!this.registerer) {
+                return false;
+            }
+            return this.registerer.unregister({ all: true }).then((res) => {
+            }).catch((e) => {
             });
-        }); };
+        });
         this.init(options);
     }
-    M7Webrtc.prototype.init = function (config) {
-        var _this = this;
+    init(config) {
         // 获取HTMLElement
         this.config = config;
-        console.log(config, 'config==================');
-        var audioElement = getAudio('m7remoteAudio');
+        const audioElement = getAudio('m7remoteAudio');
         // HTMLElement to 获取HTMLElement
         function getAudio(id) {
-            var el = document.getElementById(id);
+            const el = document.getElementById(id);
             if (!(el instanceof HTMLAudioElement)) { // 没有音频dom,重新创建一个
                 // throw new Error(`Element '${id}' not found or not an audio element.`)
-                var audio = new Audio();
+                const audio = new Audio();
                 audio.controls = true;
                 audio.autoplay = true;
                 audio.id = 'm7remoteAudio';
@@ -1106,22 +1280,22 @@ var M7Webrtc = /** @class */ (function () {
             element.autoplay = true; // Safari does not allow calling .play() from a non user action
             element.srcObject = stream;
             // Load and start playback of media.
-            element.play().catch(function (error) {
+            element.play().catch((error) => {
                 console.error('Failed to play media');
                 console.error(error);
             });
             // If a track is added, load and restart playback of media.
-            stream.onaddtrack = function () {
+            stream.onaddtrack = () => {
                 element.load(); // Safari does not work otheriwse
-                element.play().catch(function (error) {
+                element.play().catch((error) => {
                     console.error('Failed to play remote media on add track');
                     console.error(error);
                 });
             };
             // If a track is removed, load and restart playback of media.
-            stream.onremovetrack = function () {
+            stream.onremovetrack = () => {
                 element.load(); // Safari does not work otheriwse
-                element.play().catch(function (error) {
+                element.play().catch((error) => {
                     console.error('Failed to play remote media on remove track');
                     console.error(error);
                 });
@@ -1131,28 +1305,28 @@ var M7Webrtc = /** @class */ (function () {
          * Create a user agent
          * 创建用户代理
          */
-        var transportOptions = {
+        const transportOptions = {
             server: 'wss://' + config.server
         };
-        var userAgentDelegate = {
-            onInvite: function (invitation) {
+        const userAgentDelegate = {
+            onInvite: (invitation) => {
                 console.log('userAgent invitation', invitation);
-                _this.Ginvitation = invitation;
+                this.Ginvitation = invitation;
                 // An Invitation is a Session
-                var incomingSession = invitation;
+                const incomingSession = invitation;
                 // Setup incoming session delegate
                 incomingSession.delegate = {
                     // Handle incoming REFER request.
-                    onRefer: function (referral) {
+                    onRefer(referral) {
                         console.log(referral);
                     }
                 };
-                _this.sendMessage('incomingcall');
-                _this.Ginvitation._onCancel = function (message) {
-                    _this.sendMessage('cancel');
+                this.sendMessage('incomingcall');
+                this.Ginvitation._onCancel = (message) => {
+                    this.sendMessage('cancel');
                 };
                 // Handle incoming session state changes.
-                incomingSession.stateChange.addListener(function (state) {
+                incomingSession.stateChange.addListener((state) => {
                     switch (state) {
                         case sip_js__WEBPACK_IMPORTED_MODULE_0__["SessionState"].Initial:
                             break;
@@ -1162,7 +1336,7 @@ var M7Webrtc = /** @class */ (function () {
                         // 会话已经建立
                         case sip_js__WEBPACK_IMPORTED_MODULE_0__["SessionState"].Established:
                             // eslint-disable-next-line no-case-declarations
-                            var sessionDescriptionHandler = incomingSession.sessionDescriptionHandler;
+                            const sessionDescriptionHandler = incomingSession.sessionDescriptionHandler;
                             if (!sessionDescriptionHandler || !(sessionDescriptionHandler instanceof sip_js__WEBPACK_IMPORTED_MODULE_0__["Web"].SessionDescriptionHandler)) {
                                 throw new Error('Invalid session description handler.');
                             }
@@ -1178,92 +1352,98 @@ var M7Webrtc = /** @class */ (function () {
                             throw new Error('Unknown session state.');
                     }
                 });
-                var constrainsDefault = {
+                const constrainsDefault = {
                     audio: true,
                     video: false
                 };
-                var options = {
+                const options = {
                     sessionDescriptionHandlerOptions: {
                         constraints: constrainsDefault
                     }
                 };
-                var calltype = _this.Ginvitation.incomingInviteRequest.message.headers['X-Asterisk-Calltype'][0].raw;
+                const calltype = this.Ginvitation.incomingInviteRequest.message.headers['X-Asterisk-Calltype'][0].raw;
                 if (calltype === 'dialout') {
                     invitation.accept(options)
-                        .then(function () {
+                        .then(() => {
                         console.log("接听成功");
-                    }).catch(function (error) {
+                    }).catch((error) => {
                         console.log("接听失败");
                     });
                 }
+            },
+            onConnect: () => {
+                console.log('onConnect==============');
+            },
+            onDisconnect: () => {
+                console.log('onDISCONNECT===============');
+            },
+            onRegisterRequest: () => {
+                console.log('onRegisterRequest===============');
+            },
+            onRegister: () => {
+                console.log('onRegister=============');
+            },
+            onMessage: (message) => {
+                console.log(message);
+                console.log('onMessage===============');
             }
         };
-        var uri = sip_js__WEBPACK_IMPORTED_MODULE_0__["UserAgent"].makeURI('sip:' + config.sip + '@' + config.server);
+        const uri = sip_js__WEBPACK_IMPORTED_MODULE_0__["UserAgent"].makeURI('sip:' + config.sip + '@' + config.server);
         if (!uri) {
             throw new Error('Failed to create URI');
         }
-        var userAgentOptions = {
+        const userAgentOptions = {
             delegate: userAgentDelegate,
             displayName: '7moor',
-            uri: uri,
-            transportOptions: transportOptions,
+            uri,
+            transportOptions,
             authorizationUsername: config.sip,
             authorizationPassword: config.secret
             /* ... */
         };
         this.userAgent = new sip_js__WEBPACK_IMPORTED_MODULE_0__["UserAgent"](userAgentOptions);
-        var registererOptions = {
+        const registererOptions = {
             expires: 10
         };
         this.registerer = new sip_js__WEBPACK_IMPORTED_MODULE_0__["Registerer"](this.userAgent, registererOptions);
         /***
          * 注册的状态
          */
-        var requestDelegate = {
-            onAccept: function (response) {
+        const requestDelegate = {
+            onAccept: (response) => {
                 console.log('onAccept.....', response);
             },
-            onProgress: function (response) {
+            onProgress: (response) => {
                 console.log('onProgress.....', response);
             },
-            onRedirect: function (response) {
+            onRedirect: (response) => {
                 console.log('onRedirect.....', response);
             },
-            onReject: function (response) {
+            onReject: (response) => {
                 console.log('onReject.....', response);
             },
-            onTrying: function (response) {
+            onTrying: (response) => {
                 console.log('onTrying.....', response);
             }
         };
-        var registererRegisterOptions = {
-            requestDelegate: requestDelegate
+        const registererRegisterOptions = {
+            requestDelegate
         };
         this.registerHandle(registererRegisterOptions);
-    };
-    M7Webrtc.prototype.registerHandle = function (registererRegisterOptions) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.userAgent.start()];
-                    case 1:
-                        _a.sent();
-                        // 注册
-                        return [4 /*yield*/, this.registerer.register(registererRegisterOptions)];
-                    case 2:
-                        // 注册
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
+    }
+    registerHandle(registererRegisterOptions) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.userAgent.start();
+            // 注册
+            yield this.registerer.register(registererRegisterOptions);
         });
-    };
-    M7Webrtc.prototype.sendMessage = function (message) {
+    }
+    sendMessage(message) {
         if (this.message) {
             this.message(message);
         }
-    };
-    M7Webrtc.prototype.sendDTMF = function (tone) {
+    }
+    sendDTMF(tone) {
         // As RFC 6086 states, sending DTMF via INFO is not standardized...
         //
         // Companies have been using INFO messages in order to transport
@@ -1288,21 +1468,31 @@ var M7Webrtc = /** @class */ (function () {
         // supported by this mechanism, the UA should generate the INFO at that
         // time.
         // https://tools.ietf.org/html/draft-kaplan-dispatch-info-dtmf-package-00#section-5.3
-        var dtmf = tone;
-        var duration = 2000;
-        var body = {
+        const dtmf = tone;
+        const duration = 2000;
+        const body = {
             contentDisposition: "render",
             contentType: "application/dtmf-relay",
             content: "Signal=" + dtmf + "\r\nDuration=" + duration
         };
-        var requestOptions = { body: body };
-        return this.Ginvitation.info({ requestOptions: requestOptions }).then(function () {
+        const requestOptions = { body };
+        return this.Ginvitation.info({ requestOptions }).then(() => {
             return;
         });
-    };
-    return M7Webrtc;
-}());
-/* harmony default export */ __webpack_exports__["default"] = (M7Webrtc);
+    }
+    disconnect() {
+        return this.userAgent.stop();
+    }
+    connect() {
+        if (this.userAgent.state !== sip_js__WEBPACK_IMPORTED_MODULE_0__["UserAgentState"].Started) {
+            return this.userAgent.start();
+        }
+        return this.userAgent.reconnect();
+    }
+    isConnected() {
+        return this.userAgent.isConnected();
+    }
+}
 
 
 /***/ }),
@@ -14926,6 +15116,7 @@ class UserAgent {
         }
     }
     onTransportDisconnect(error) {
+        console.log(this.state, '00000000000000000000000000000000000')
         if (this.state === _user_agent_state__WEBPACK_IMPORTED_MODULE_11__["UserAgentState"].Stopped) {
             return;
         }
@@ -29109,6 +29300,8 @@ class Transport {
     }
     _connect() {
         this.logger.log(`Connecting ${this.server}`);
+        console.log(`Connecting ${this.server}`)
+        // console.log('王涛输出', this.state)
         switch (this.state) {
             case _api_transport_state__WEBPACK_IMPORTED_MODULE_2__["TransportState"].Connecting:
                 // If `state` is "Connecting", `state` MUST NOT transition before returning.
@@ -29165,6 +29358,7 @@ class Transport {
         try {
             // WebSocket()
             // https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket
+            console.log('我重连了')
             ws = new WebSocket(this.server, "sip");
             ws.binaryType = "arraybuffer"; // set data type of received binary messages
             ws.addEventListener("close", (ev) => this.onWebSocketClose(ev, ws));

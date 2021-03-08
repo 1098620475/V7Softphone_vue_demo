@@ -2,15 +2,56 @@
  * @Author: Wangtao
  * @Date: 2021-02-24 15:23:54
  * @LastEditors: Wangtao
- * @LastEditTime: 2021-03-01 18:15:25
+ * @LastEditTime: 2021-03-08 16:26:58
 -->
 <template>
   <div class="phone-bar">
     <div class="peerStatus">
+      <el-select
+        v-model="agentStatusNumber"
+        placeholder="切换座席状态"
+        style="margin-right: 10px"
+        size="mini"
+        @change="updateAgentStatus"
+      >
+        <el-option
+          v-for="item in agentStatusList"
+          :key="item.number"
+          :label="item.name"
+          :value="item.number"
+        />
+      </el-select>
       <span id="phoneAgentStatus">{{ currentStatusName }}</span>
       <span class="softphone_timer">
         <phoneBarTimer ref="phoneBarTimeRef" />
       </span>
+      <el-select
+        v-model="loginType"
+        placeholder="切换登陆方式"
+        size="mini"
+        @change="updateLoginType"
+      >
+        <el-option
+          v-for="item in loginTypeList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-button
+        class="webphone-btn"
+        type="primary"
+        :disabled="!isVisibleBtn('disconnect')"
+        size="mini"
+        @click="disconnect"
+      >断开设备</el-button>
+      <el-button
+        class="webphone-btn"
+        type="primary"
+        :disabled="!isVisibleBtn('connect')"
+        size="mini"
+        @click="connect"
+      >重连设备</el-button>
     </div>
     <div class="callStatus">
       <el-input
@@ -75,8 +116,8 @@
 <script>
 import phoneBarTimer from './phoneBarTimes'
 import V7Softphone from './V7Softphone'
+// import V7Softphone from 'softphone_test'
 import { Message } from 'element-ui'
-let currentExtenType = ''
 export default {
   name: 'PhoneDemo',
   components: {
@@ -114,7 +155,7 @@ export default {
         SIP_INCOMING_ARRANGE: ['dialout'],
         SIP_DIALOUT_ARRANGE: ['dialout'],
         //
-        WEBRTC_INVALID: ['dialout'],
+        WEBRTC_INVALID: ['dialout', 'disconnect'],
         WEBRTC_INCOMING_CALLING: ['hangup'],
         WEBRTC_DIALOUT_CALLING: ['hangup'],
         WEBRTC_INCOMING_RING: ['hangup', 'answer'],
@@ -126,11 +167,25 @@ export default {
         WEBRTC_INCOMING_HOLD: ['holdcancel'],
         WEBRTC_DIALOUT_HOLD: ['holdcancel'],
         WEBRTC_INCOMING_ARRANGE: ['dialout'],
-        WEBRTC_DIALOUT_ARRANGE: ['dialout']
+        WEBRTC_DIALOUT_ARRANGE: ['dialout'],
+        WEBRTC_DISCONNECTED: ['connect']
       },
       currentStatus: 'PSTN_INVALID',
       currentStatusName: '空闲',
-      keyList: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#']
+      keyList: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'],
+      loginType: '',
+      loginTypeList: [{
+        value: 'PSTN',
+        label: '手机'
+      }, {
+        value: 'SIP',
+        label: 'SIP话机'
+      }, {
+        value: 'WEBRTC',
+        label: 'webrtc'
+      }],
+      agentStatusList: [],
+      agentStatusNumber: ''
     }
   },
   mounted() {
@@ -139,7 +194,8 @@ export default {
     const exten = query.exten
     const password = query.password
     const extenType = query.extenType
-    currentExtenType = extenType
+    this.loginType = extenType
+    this.agentStatusNumber = '0'
     window.V7Softphone = new V7Softphone({
       accountId: account,
       agentNumber: exten,
@@ -157,7 +213,8 @@ export default {
         }
       },
       success: () => {
-
+        this.getAgentPhoneBarList()
+        this.getAvailableSipNumberList()
       }
     })
     window.V7Softphone.attachEvent({
@@ -256,10 +313,56 @@ export default {
     sendDTMF(key) {
       window.V7Softphone.webPhoneApi.sendDTMF(key)
     },
+    connect() {
+      window.V7Softphone.webPhoneApi.connect()
+    },
+    disconnect() {
+      window.V7Softphone.webPhoneApi.disconnect()
+    },
     keyDowndialout(event) {
       if (event.keyCode === 13) {
         this.dialout()
       }
+    },
+    updateLoginType(type) {
+      window.V7Softphone.agentApi.updateLoginType({
+        loginType: type,
+        success: () => {
+          this.loginType = type
+          this.updateCurrentStatus()
+          Message({
+            message: '切换成功',
+            type: 'success',
+            duration: 5 * 1000
+          })
+        },
+        fail: () => {
+          Message({
+            message: '切换失败',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+    },
+    getAgentPhoneBarList() {
+      window.V7Softphone.agentApi.getAgentPhoneBarList({
+        success: (res) => {
+          this.agentStatusList = res.data
+        }
+      })
+    },
+    updateAgentStatus() {
+      window.V7Softphone.agentApi.updateAgentStatus({
+        statusNumber: this.agentStatusNumber
+      })
+    },
+    getAvailableSipNumberList() {
+      window.V7Softphone.agentApi.getAvailableSipNumberList({
+        success: (res) => {
+          // SIP话机模式需要绑定的number参数可以从这里获取
+        }
+      })
     },
     isVisibleBtn(type) {
       if (this.currentStatus) {
@@ -268,37 +371,47 @@ export default {
     },
     getCurrentStatus(statusNumber, type) {
       const callType = type ? '_' + type.toUpperCase() : ''
-      let statusName = currentExtenType + '_INVALID'
+      let statusName = ''
       switch (statusNumber) {
         case '0':
-          statusName = currentExtenType + '_INVALID'
+          statusName = this.loginType + '_INVALID'
           break
         case '1':
-          statusName = currentExtenType + callType + '_BUSY'
+          statusName = this.loginType + callType + '_BUSY'
           break
         case '2':
-          statusName = currentExtenType + callType + '_CALLING'
+          statusName = this.loginType + callType + '_CALLING'
           break
         case '3':
-          statusName = currentExtenType + callType + '_RING'
+          statusName = this.loginType + callType + '_RING'
           break
         case '4':
-          statusName = currentExtenType + callType + '_LINK'
+          statusName = this.loginType + callType + '_LINK'
           break
         case '5':
-          statusName = currentExtenType + callType + '_ARRANGE'
+          statusName = this.loginType + callType + '_ARRANGE'
           break
         case '6':
-          statusName = currentExtenType + callType + '_HOLD'
+          statusName = this.loginType + callType + '_HOLD'
           break
         case '7':
-          statusName = currentExtenType + callType + '_MUTE'
+          statusName = this.loginType + callType + '_MUTE'
+          break
+        case '8':
+          statusName = this.loginType + callType + '_DISCONNECTED'
           break
         default:
-          statusName = currentExtenType + callType + '_BUSY'
+          statusName = this.loginType + callType + '_BUSY'
           break
       }
       return statusName
+    },
+    updateCurrentStatus() {
+      const statusList = this.currentStatus.split('_')
+      if (statusList[0] !== this.loginType) {
+        statusList[0] = this.loginType
+        this.currentStatus = statusList.join('_')
+      }
     },
     /**
      * 控制计时器
@@ -348,5 +461,8 @@ export default {
   .el-button {
     margin: 0 10px 10px 0px;
   }
+}
+.webphone-btn {
+  margin-left: 10px;
 }
 </style>

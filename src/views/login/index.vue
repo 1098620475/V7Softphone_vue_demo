@@ -97,7 +97,7 @@ export default {
     }
     return {
       loginForm: {
-        username: '2000@testsdk',
+        username: '2001@testsdk',
         password: '123456Aa',
         extenType: 'WEBRTC'
       },
