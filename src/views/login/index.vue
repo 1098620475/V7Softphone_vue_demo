@@ -83,6 +83,7 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!value || value.indexOf('@') === -1) {
+        // 账号信息不规范
         callback(new Error('请填写正确的登陆账号'))
       } else {
         callback()
