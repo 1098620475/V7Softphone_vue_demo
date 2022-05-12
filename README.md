@@ -17,3 +17,20 @@ npm install
 # develop
 npm run dev
 ```
+### install error
+```
+# install error
+
+npm ERR! Error while executing:
+npm ERR! /usr/local/bin/git ls-remote -h -t git://github.com/adobe-webplatform/eve.git
+npm ERR!
+npm ERR! fatal: 远程错误：
+npm ERR!   The unauthenticated git protocol on port 9418 is no longer supported.
+npm ERR! Please see https://github.blog/2021-09-01-improving-git-protocol-security-github/ for more information.
+
+##
+```
+- fix
+```
+git config --global url."https://".insteadOf git://
+```
